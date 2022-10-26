@@ -17,7 +17,7 @@ func (v *ValidationError) String() string {
 		return fmt.Sprintf("Validation error: %s", v.Err.Error())
 	}
 
-	return fmt.Sprintf("Validation failed: %s", v.Err.Error())
+	return fmt.Sprintf("Validation failed: %s", v.Msg)
 }
 
 // Rule contains actual functionality to validate a value
