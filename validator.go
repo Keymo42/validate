@@ -33,12 +33,12 @@ type ValidatorMap map[string]FieldValidator[any]
 type ErrorMap map[string][]ValidationError
 
 // First returns the first affected field name and it's corresponding validation error, if any.
-func (e *ErrorMap) First() (string, *ValidationError) {
-	if len(*e) == 0 {
+func (e ErrorMap) First() (string, *ValidationError) {
+	if len(e) == 0 {
 		return "", nil
 	}
 
-	for fieldName, errs := range *e {
+	for fieldName, errs := range e {
 		var err *ValidationError
 		if len(errs) > 0 {
 			err = &errs[0]
