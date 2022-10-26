@@ -27,7 +27,12 @@ type Rule func() *ValidationError
 type Rules []Rule
 
 // ValidatorMap maps field names to validation rules
-type ValidatorMap map[string]FieldValidator[any]
+type ValidatorMap map[string][]FieldValidator[any]
+
+// ForField is a wrapper function that helps you define lists of FieldValidators
+func ForField(v ...FieldValidator[any]) []FieldValidator[any] {
+	return v
+}
 
 // ErrorMap maps validation erros to fieldnames
 type ErrorMap map[string][]ValidationError
@@ -105,13 +110,15 @@ func (v *Validator) Rules(rules ValidatorMap) *Validator {
 
 // Run validation rules provided with v.Rules under respect of the set validation options
 func (v *Validator) Run() *Validator {
-	for field, validator := range v.validatorMap {
-		for _, rule := range validator.Rules() {
-			if err := rule(); err != nil {
-				v.errs.Add(field, *err)
+	for field, validators := range v.validatorMap {
+		for _, validator := range validators {
+			for _, rule := range validator.Rules() {
+				if err := rule(); err != nil {
+					v.errs.Add(field, *err)
 
-				if v.opts.Bail {
-					break
+					if v.opts.Bail {
+						break
+					}
 				}
 			}
 		}

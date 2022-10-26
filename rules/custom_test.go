@@ -43,7 +43,7 @@ func TestCustomInt(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ok := validate.New().
 				Rules(validate.ValidatorMap{
-					"foo": Custom(tc.value, validateIntIs42),
+					"foo": validate.ForField(Custom(tc.value, validateIntIs42)),
 				}).
 				Run().
 				OK()
@@ -67,7 +67,7 @@ func TestCustomString(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ok := validate.New().
 				Rules(validate.ValidatorMap{
-					"foo": Custom(tc.value, validateStrLenIsBetween10And20),
+					"foo": validate.ForField(Custom(tc.value, validateStrLenIsBetween10And20)),
 				}).
 				Run().
 				OK()

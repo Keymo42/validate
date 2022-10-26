@@ -21,7 +21,7 @@ func TestStringEmpty(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ok := validate.New().
 				Rules(validate.ValidatorMap{
-					tc.name: Str(tc.value).Empty(),
+					tc.name: validate.ForField(Str(tc.value).Empty()),
 				}).
 				Run().
 				OK()
@@ -45,7 +45,7 @@ func TestStringNotEmpty(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ok := validate.New().
 				Rules(validate.ValidatorMap{
-					"foo": Str(tc.value).NotEmpty(),
+					"foo": validate.ForField(Str(tc.value).NotEmpty()),
 				}).
 				Run().
 				OK()
@@ -70,7 +70,7 @@ func TestStringMinLen(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ok := validate.New().
 				Rules(validate.ValidatorMap{
-					"foo": Str(tc.value).MinLen(tc.min),
+					"foo": validate.ForField(Str(tc.value).MinLen(tc.min)),
 				}).
 				Run().
 				OK()
@@ -95,7 +95,7 @@ func TestStringMaxLen(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ok := validate.New().
 				Rules(validate.ValidatorMap{
-					"foo": Str(tc.value).MaxLen(tc.max),
+					"foo": validate.ForField(Str(tc.value).MaxLen(tc.max)),
 				}).
 				Run().
 				OK()
