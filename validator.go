@@ -7,17 +7,26 @@ import "fmt"
 // Msg is used for exceptional invalid values, like len(str) should be > 42, but is 12.
 // Err is used for actual errors that happen during validation, that could not be related to invalid values.
 type ValidationError struct {
-	Msg string
-	Err error
+	Msg  string
+	Err  error
+	Code int
 }
 
 // String displays the validation error as a string
 func (v *ValidationError) String() string {
+	var str string
+
 	if v.Err != nil {
-		return fmt.Sprintf("Validation error: %s", v.Err.Error())
+		str = fmt.Sprintf("Validation error: %s", v.Err.Error())
+	} else {
+		str = fmt.Sprintf("Validation failed: %s", v.Msg)
 	}
 
-	return fmt.Sprintf("Validation failed: %s", v.Msg)
+	if v.Code != 0 {
+		str = fmt.Sprintf("%s; code=%d", str, v.Code)
+	}
+
+	return str
 }
 
 // Rule contains actual functionality to validate a value
