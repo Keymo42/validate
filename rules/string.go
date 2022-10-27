@@ -79,3 +79,18 @@ func (s *StringValidator) MaxLen(max int) *StringValidator {
 
 	return s
 }
+
+// Len validates that the length of a string equals l
+func (s *StringValidator) Len(l int) *StringValidator {
+	s.AddRule(func() *validate.ValidationError {
+		if len(s.Value) != l {
+			return &validate.ValidationError{
+				Msg: fmt.Sprintf("len must be %d, but is %d", l, len(s.Value)),
+			}
+		}
+
+		return nil
+	})
+
+	return s
+}
