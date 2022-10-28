@@ -35,6 +35,24 @@ func (s *ErrorMapSuite) TestAdd() {
 	}
 }
 
+type ValidationErrorSuite struct {
+	suite.Suite
+}
+
+func (v *ValidationErrorSuite) TestDefaults() {
+	opts := ValidatorOptions{
+		DefaultCode: 42,
+	}
+
+	err := ValidationError{Msg: "Oopsie"}
+	err.applyDefaults(&opts)
+	assert.Equal(v.T(), opts.DefaultCode, err.Code)
+}
+
 func TestErrorMapSuite(t *testing.T) {
 	suite.Run(t, new(ErrorMapSuite))
+}
+
+func TestValidationErrorSuite(t *testing.T) {
+	suite.Run(t, new(ValidationErrorSuite))
 }

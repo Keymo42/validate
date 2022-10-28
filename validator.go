@@ -29,6 +29,13 @@ func (v *ValidationError) String() string {
 	return str
 }
 
+// applyDefaults appies default values specified in ValidatorOptions
+func (v *ValidationError) applyDefaults(opts *ValidatorOptions) {
+	if v.Code == 0 && opts.DefaultCode != 0 {
+		v.Code = opts.DefaultCode
+	}
+}
+
 // Rule contains actual functionality to validate a value
 type Rule func() *ValidationError
 
@@ -83,7 +90,8 @@ type FieldValidator[T any] interface {
 
 // ValidatorOptions contains fields to configure a validator
 type ValidatorOptions struct {
-	Bail bool
+	Bail        bool
+	DefaultCode int
 }
 
 // Validator is the central struct used to validate anything.
@@ -123,6 +131,7 @@ func (v *Validator) Run() *Validator {
 		for _, validator := range validators {
 			for _, rule := range validator.Rules() {
 				if err := rule(); err != nil {
+					err.applyDefaults(&v.opts)
 					v.errs.Add(field, *err)
 
 					if v.opts.Bail {
