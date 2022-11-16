@@ -128,6 +128,8 @@ func (v *Validator) Rules(rules ValidatorMap) *Validator {
 // Run validation rules provided with v.Rules under respect of the set validation options
 func (v *Validator) Run() *Validator {
 	for field, validators := range v.validatorMap {
+		defer v.recoverRulePanic(field)
+
 		for _, validator := range validators {
 			for _, rule := range validator.Rules() {
 				if err := rule(); err != nil {
@@ -145,6 +147,27 @@ func (v *Validator) Run() *Validator {
 	return v
 }
 
+// With is easy and quick method to add a validators to a field
+func (v *Validator) With(fieldName string, rules ...FieldValidator[any]) *Validator {
+	v.validatorMap[fieldName] = append(v.validatorMap[fieldName], rules...)
+
+	return v
+}
+
+// WithRecover is the same as With, but recovers from errors
+func (v *Validator) WithRecover(fieldName string, closure func(validator *Validator)) *Validator {
+	defer (func() {
+		if r := recover(); r != nil {
+			v.errs.Add(fieldName, ValidationError{
+				Err: fmt.Errorf("panic while adding rule: %#v", r),
+			})
+		}
+	})()
+
+	closure(v)
+	return v
+}
+
 // Errs returns validation errors, if any
 func (v *Validator) Errs() ErrorMap {
 	return v.errs
@@ -153,4 +176,13 @@ func (v *Validator) Errs() ErrorMap {
 // OK returns true if no valiation errors occured
 func (v *Validator) OK() bool {
 	return len(v.errs) == 0
+}
+
+// recoverRulePanic recovers a panics that happen during validation
+func (v *Validator) recoverRulePanic(fieldName string) {
+	if r := recover(); r != nil {
+		v.errs.Add(fieldName, ValidationError{
+			Err: fmt.Errorf("panic while validating: %#v", r),
+		})
+	}
 }
