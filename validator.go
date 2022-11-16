@@ -132,7 +132,13 @@ func (v *Validator) Run() *Validator {
 
 		for _, validator := range validators {
 			for _, rule := range validator.Rules() {
-				if err := rule(); err != nil {
+				var err *ValidationError = nil
+				(func() {
+					defer v.recoverRulePanic(field)
+					err = rule()
+				})()
+
+				if err != nil {
 					err.applyDefaults(&v.opts)
 					v.errs.Add(field, *err)
 
@@ -156,15 +162,19 @@ func (v *Validator) With(fieldName string, rules ...FieldValidator[any]) *Valida
 
 // WithRecover is the same as With, but recovers from errors
 func (v *Validator) WithRecover(fieldName string, closure func(validator *Validator)) *Validator {
-	defer (func() {
+	recoverClosure := func() {
 		if r := recover(); r != nil {
 			v.errs.Add(fieldName, ValidationError{
 				Err: fmt.Errorf("panic while adding rule: %#v", r),
 			})
 		}
+	}
+
+	(func() {
+		defer recoverClosure()
+		closure(v)
 	})()
 
-	closure(v)
 	return v
 }
 
