@@ -131,6 +131,10 @@ func (v *Validator) Run() *Validator {
 		defer v.recoverRulePanic(field)
 
 		for _, validator := range validators {
+			if validator == nil {
+				continue
+			}
+
 			for _, rule := range validator.Rules() {
 				var err *ValidationError = nil
 				(func() {
