@@ -14,7 +14,10 @@ func TestIfNotEmpty(t *testing.T) {
 		value     string
 		expectOK  bool
 	}{
-		{name: "run valid", value: "not-empty", expectOK: true},
+		{name: "false, valid", condition: false, value: "not-empty", expectOK: true},
+		{name: "true, valid", condition: true, value: "not-empty", expectOK: true},
+		{name: "false, invalid", condition: false, value: "", expectOK: true},
+		{name: "true, invalid", condition: true, value: "", expectOK: false},
 	}
 
 	for _, tc := range tt {
