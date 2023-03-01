@@ -51,7 +51,7 @@ func (v *ValidationErrorSuite) TestDefaults() {
 	assert.Equal(v.T(), opts.DefaultCode, err.Code)
 }
 
-func (v *ValidationErrorSuite) TestBailOption() {
+func (v *ValidationErrorSuite) TestNilCheck() {
 	t := v.T()
 
 	type TestStruct struct {
