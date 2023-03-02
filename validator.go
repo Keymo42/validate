@@ -30,7 +30,7 @@ func (v *ValidationError) String() string {
 }
 
 // applyDefaults appies default values specified in ValidatorOptions
-func (v *ValidationError) applyDefaults(opts *ValidatorOptions) {
+func (v *ValidationError) ApplyDefaults(opts *ValidatorOptions) {
 	if v.Code == 0 && opts.DefaultCode != 0 {
 		v.Code = opts.DefaultCode
 	}
@@ -143,7 +143,7 @@ func (v *Validator) Run() *Validator {
 				})()
 
 				if err != nil {
-					err.applyDefaults(&v.opts)
+					err.ApplyDefaults(&v.opts)
 					v.errs.Add(field, *err)
 
 					if v.opts.Bail {
